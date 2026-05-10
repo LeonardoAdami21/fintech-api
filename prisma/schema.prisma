@@ -1,0 +1,173 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────
+// IDENTITY BOUNDED CONTEXT
+// ─────────────────────────────────────────
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String     @map("password_hash")
+  status       UserStatus @default(PENDING_VERIFICATION)
+  role         UserRole   @default(CUSTOMER)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  sessions Session[]
+  account  Account?
+
+  @@map("users")
+}
+
+model Session {
+  id           String    @id @default(uuid())
+  userId       String    @map("user_id")
+  refreshToken String    @unique @map("refresh_token")
+  expiresAt    DateTime  @map("expires_at")
+  revokedAt    DateTime? @map("revoked_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+enum UserStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+}
+
+// ─────────────────────────────────────────
+// ACCOUNTS BOUNDED CONTEXT
+// ─────────────────────────────────────────
+
+model Account {
+  id            String        @id @default(uuid())
+  userId        String        @unique @map("user_id")
+  accountNumber String        @unique @map("account_number")
+  agency        String        @default("0001")
+  balanceCents  BigInt        @default(0) @map("balance_cents")
+  limitCents    BigInt        @default(0) @map("limit_cents")
+  status        AccountStatus @default(ACTIVE)
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  user         User      @relation(fields: [userId], references: [id])
+  pixKeys      PixKey[]
+  sentPayments Payment[] @relation("sender")
+  rcvdPayments Payment[] @relation("receiver")
+
+  @@map("accounts")
+}
+
+model PixKey {
+  id        String     @id @default(uuid())
+  accountId String     @map("account_id")
+  keyType   PixKeyType @map("key_type")
+  keyValue  String     @unique @map("key_value")
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  account Account @relation(fields: [accountId], references: [id])
+
+  @@index([accountId])
+  @@map("pix_keys")
+}
+
+enum AccountStatus {
+  ACTIVE
+  BLOCKED
+  CLOSED
+}
+
+enum PixKeyType {
+  CPF
+  CNPJ
+  EMAIL
+  PHONE
+  RANDOM
+}
+
+// ─────────────────────────────────────────
+// PAYMENTS BOUNDED CONTEXT
+// ─────────────────────────────────────────
+
+model Payment {
+  id                String        @id @default(uuid())
+  senderAccountId   String        @map("sender_account_id")
+  receiverAccountId String        @map("receiver_account_id")
+  amountCents       BigInt        @map("amount_cents")
+  type              PaymentType
+  status            PaymentStatus @default(PENDING)
+  description       String?
+  idempotencyKey    String        @unique @map("idempotency_key")
+  failureReason     String?       @map("failure_reason")
+  processedAt       DateTime?     @map("processed_at")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  senderAccount   Account       @relation("sender", fields: [senderAccountId], references: [id])
+  receiverAccount Account       @relation("receiver", fields: [receiverAccountId], references: [id])
+  ledgerEntries   LedgerEntry[]
+
+  @@index([senderAccountId])
+  @@index([receiverAccountId])
+  @@index([status])
+  @@map("payments")
+}
+
+enum PaymentType {
+  PIX
+  TED
+  INTERNAL
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// ─────────────────────────────────────────
+// LEDGER BOUNDED CONTEXT
+// ─────────────────────────────────────────
+
+model LedgerEntry {
+  id           String          @id @default(uuid())
+  paymentId    String          @map("payment_id")
+  accountId    String          @map("account_id")
+  type         LedgerEntryType
+  amountCents  BigInt          @map("amount_cents")
+  balanceCents BigInt          @map("balance_cents")
+  description  String
+  createdAt    DateTime        @default(now()) @map("created_at")
+
+  payment Payment @relation(fields: [paymentId], references: [id])
+
+  @@index([accountId])
+  @@index([paymentId])
+  @@map("ledger_entries")
+}
+
+enum LedgerEntryType {
+  DEBIT
+  CREDIT
+}
