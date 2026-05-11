@@ -9,7 +9,15 @@ import {
   HttpStatus,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiBadRequestResponse,
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+} from '@nestjs/swagger';
 import { IsString, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RegisterUserHandler } from '../../application/commands/register-user/register-user.handler';
@@ -58,7 +66,15 @@ export class AuthController {
 
   // ── Register ──────────────────────────────────────────────────────────────
   @Post('register')
-  @ApiOperation({ summary: 'Register a new user' })
+  @ApiOperation({
+    summary: 'Register a new user',
+    description: 'Route to register a new user',
+  })
+  @ApiCreatedResponse({
+    description: 'The user has been successfully created.',
+  })
+  @ApiBadRequestResponse({ description: 'User already exists.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   async register(@Body() dto: RegisterUserDto) {
     return {
       statusCode: 201,
@@ -71,7 +87,13 @@ export class AuthController {
   // ── Login ─────────────────────────────────────────────────────────────────
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Login — returns access + refresh token pair' })
+  @ApiOperation({
+    summary: 'Login — returns access + refresh token pair',
+    description: 'Route to login a user',
+  })
+  @ApiOkResponse({ description: 'User has been successfully logged in.' })
+  @ApiBadRequestResponse({ description: 'Invalid credentials.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   async login(@Body() dto: LoginUserDto) {
     return {
       statusCode: 200,
@@ -90,6 +112,11 @@ export class AuthController {
       'Old token is immediately revoked and a new pair is issued. ' +
       'Reuse of a revoked token triggers global session revocation (theft detection).',
   })
+  @ApiOkResponse({
+    description: 'New token pair has been successfully issued.',
+  })
+  @ApiBadRequestResponse({ description: 'Invalid refresh token.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   async refresh(@Body() dto: RefreshTokenDto) {
     return {
       statusCode: 200,
@@ -107,7 +134,12 @@ export class AuthController {
   @ApiOperation({
     summary:
       'Logout — revoke one session or all devices (omit sessionId for global)',
+    description:
+      'Revoke one session or all devices (omit sessionId for global logout).',
   })
+  @ApiOkResponse({ description: 'Session has been successfully revoked.' })
+  @ApiBadRequestResponse({ description: 'Invalid session ID.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   async logout(@CurrentUser() user: AuthenticatedUser, @Body() dto: LogoutDto) {
     return {
       statusCode: 200,
@@ -124,7 +156,11 @@ export class AuthController {
   @ApiOperation({
     summary:
       'List all active sessions for the current user (connected devices)',
+    description:
+      'List all active sessions for the current user (connected devices).',
   })
+  @ApiOkResponse({ description: 'List of active sessions.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   async sessions(@CurrentUser() user: AuthenticatedUser) {
     return {
       statusCode: 200,
@@ -136,7 +172,12 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Current authenticated user info' })
+  @ApiOperation({
+    summary: 'Current authenticated user info',
+    description: 'Route to get current authenticated user info',
+  })
+  @ApiOkResponse({ description: 'Current user info' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   me(@CurrentUser() user: AuthenticatedUser) {
     return { statusCode: 200, data: user };
   }
