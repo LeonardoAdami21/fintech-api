@@ -1,7 +1,7 @@
 // src/modules/identity/infrastructure/jobs/session-cleanup.job.ts
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { PrismaService } from 'src/shared/infra/prisma.service';
+import { PrismaService } from 'src/shared/infrastructure/prisma.service';
 
 @Injectable()
 export class SessionCleanupJob {

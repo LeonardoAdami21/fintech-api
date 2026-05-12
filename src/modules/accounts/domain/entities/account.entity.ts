@@ -1,13 +1,13 @@
-import { AggregateRoot } from 'src/shared/domain/aggregate-root';
-import { PixKey, PixKeyType } from '../value-objects/pix-key.vo';
-import { Money } from 'src/shared/domain/money.vo';
+// src/modules/accounts/domain/entities/account.entity.ts
+
 import { AccountNumber } from '../value-objects/account-number.vo';
+import { PixKey, PixKeyType } from '../value-objects/pix-key.vo';
+import { AccountOpenedEvent } from '../events/account-opened.event';
+import { BalanceUpdatedEvent } from '../events/balance-updated.event';
+import { PixKeyRegisteredEvent } from '../events/pix-key-registered.event';
+import { AggregateRoot } from 'src/shared/domain/aggregate-root';
+import { Money } from 'src/shared/domain/money.vo';
 import { DomainError, Result } from 'src/shared/domain/result';
-import {
-  AccountOpenedEvent,
-  BalanceUpdatedEvent,
-  PixKeyRegisteredEvent,
-} from '../events/account.events';
 
 export type AccountStatus = 'ACTIVE' | 'BLOCKED' | 'CLOSED';
 
@@ -145,6 +145,25 @@ export class Account extends AggregateRoot<AccountProps> {
       });
     }
     (this.props as AccountProps).status = 'BLOCKED';
+    this.props.updatedAt = new Date();
+    return Result.ok(undefined);
+  }
+
+  removePixKey(keyValue: string): Result<void, DomainError> {
+    if (!this.isActive) {
+      return Result.fail({
+        code: 'ACCOUNT_NOT_ACTIVE',
+        message: 'Account is not active',
+      });
+    }
+    const idx = this.props.pixKeys.findIndex((k) => k.value === keyValue);
+    if (idx === -1) {
+      return Result.fail({
+        code: 'PIX_KEY_NOT_FOUND',
+        message: `PIX key "${keyValue}" not found on this account`,
+      });
+    }
+    this.props.pixKeys.splice(idx, 1);
     this.props.updatedAt = new Date();
     return Result.ok(undefined);
   }

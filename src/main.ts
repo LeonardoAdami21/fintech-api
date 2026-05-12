@@ -9,6 +9,10 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
+  (BigInt.prototype as any).toJSON = function () {
+    return this.toString();
+  };
+
   const cfg = app.get(ConfigService);
   const port = cfg.get<number>('APP_PORT', 3000);
   const env = cfg.get<string>('NODE_ENV', 'development');
@@ -28,7 +32,7 @@ async function bootstrap() {
     const doc = new DocumentBuilder()
       .setTitle('Fintech API')
       .setDescription(
-        '## Pagamentos · DDD · Outbox · Fraud Detection · Refresh Token Rotation\n\n' +
+        '## Api de pagamentos, evitando falsificação de transações PIX\n\n' +
           'Autentique-se via `POST /api/v1/auth/login` e use o `accessToken` retornado no botão **Authorize**.',
       )
       .setVersion('1.0')
