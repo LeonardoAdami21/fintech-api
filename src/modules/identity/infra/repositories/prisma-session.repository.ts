@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { ISessionRepository } from '../../domain/repositories/session.repository';
 import { Session } from '../../domain/entities/session.entity';
-import { PrismaService } from 'src/shared/infra/prisma.service';
+import { PrismaService } from 'src/shared/infrastructure/prisma.service';
 import { SessionMapper } from '../mappers/session.mapper';
 
 @Injectable()

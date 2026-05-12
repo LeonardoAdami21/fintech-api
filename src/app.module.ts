@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { envValidationSchema } from './shared/config/env.config';
 import { IdentityModule } from './modules/identity/identity.module';
 import { AccountsModule } from './modules/accounts/accounts.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { OutboxModule } from './shared/infrastructure/outbox/outbox.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { AccountsModule } from './modules/accounts/accounts.module';
     }),
     IdentityModule,
     AccountsModule,
+    PaymentsModule,
+    OutboxModule,
   ],
 })
 export class AppModule {}

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { IPaymentRepository } from '../../domain/repositories/payment.repository';
 import { Payment } from '../../domain/entities/payment.entity';
 import { PaymentMapper } from '../mappers/payment.mapper';
-import { PrismaService } from 'src/shared/infra/prisma.service';
+import { PrismaService } from 'src/shared/infrastructure/prisma.service';
 
 @Injectable()
 export class PrismaPaymentRepository implements IPaymentRepository {
