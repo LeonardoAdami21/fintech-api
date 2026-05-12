@@ -55,8 +55,12 @@ export class RegisterUserHandler {
       throw new BadRequestException(userResult.error.message);
     }
 
-    // 4. Persist (domain events could be dispatched here or via outbox)
     const user = userResult.value;
+
+    // MVP: auto-activate on registration.
+    // Production: replace with email verification flow (send token, POST /auth/activate).
+    user.activate();
+
     await this.userRepository.save(user);
     user.clearDomainEvents();
 

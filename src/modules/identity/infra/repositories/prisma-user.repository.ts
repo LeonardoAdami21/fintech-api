@@ -1,6 +1,6 @@
 // src/modules/identity/infrastructure/repositories/prisma-user.repository.ts
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/shared/infra/prisma.service';
+import { PrismaService } from 'src/shared/infrastructure/prisma.service';
 import { IUserRepository } from '../../domain/repositories/user.repository';
 import { User } from '../../domain/entities/user.entity';
 import { UserMapper } from '../mappers/user.mapper';

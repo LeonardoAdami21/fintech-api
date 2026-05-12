@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { IAccountRepository } from '../../domain/repositories/account.repository';
 import { Account } from '../../domain/entities/account.entity';
 import { AccountMapper } from '../mappers/account.mapper';
-import { PrismaService } from 'src/shared/infra/prisma.service';
+import { PrismaService } from 'src/shared/infrastructure/prisma.service';
 
 const includeKeys = { pixKeys: true } as const;
 
@@ -55,7 +55,9 @@ export class PrismaAccountRepository implements IAccountRepository {
     ]);
   }
 
-  async delete(account: Account): Promise<void> {
-    await this.prisma.account.delete({ where: { id: account.id } });
+  async deletePixKey(accountId: string, keyValue: string): Promise<void> {
+    await this.prisma.pixKey.deleteMany({
+      where: { accountId, keyValue },
+    });
   }
 }

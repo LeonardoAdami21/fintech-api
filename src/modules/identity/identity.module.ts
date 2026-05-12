@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
-import { PrismaService } from 'src/shared/infra/prisma.service';
+import { PrismaService } from 'src/shared/infrastructure/prisma.service';
 import { JwtStrategy } from './infra/strategies/jwt.strategy';
 import { TokenService } from './infra/services/token.service';
 import { PrismaUserRepository } from './infra/repositories/prisma-user.repository';

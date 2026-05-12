@@ -9,5 +9,5 @@ export interface IAccountRepository {
   findByPixKey(keyValue: string): Promise<Account | null>;
   save(account: Account): Promise<void>;
   update(account: Account): Promise<void>;
-  delete(account: Account): Promise<void>;
+  deletePixKey(accountId: string, keyValue: string): Promise<void>;
 }

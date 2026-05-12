@@ -5,9 +5,9 @@ import { OpenAccountHandler } from './application/commands/open-account/open-acc
 import { RegisterPixKeyHandler } from './application/commands/register-pix-key/register-pix-key.handler';
 import { GetAccountQuery } from './application/queries/get-account.query';
 import { IdentityModule } from '../identity/identity.module';
-import { PrismaService } from 'src/shared/infra/prisma.service';
 import { PrismaAccountRepository } from './infra/repositories/prisma-account.repository';
 import { AccountsController } from './interface/controller/accounts.controller';
+import { PrismaService } from 'src/shared/infrastructure/prisma.service';
 
 @Module({
   imports: [IdentityModule],
