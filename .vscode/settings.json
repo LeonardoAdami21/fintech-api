@@ -7,7 +7,7 @@
   "files.autoSave": "afterDelay", // optional but recommended
   "vs-code-prettier-eslint.prettierLast": false,
   "[prisma]": {
-    "editor.defaultFormatter": "Prisma.prisma"
+    "editor.defaultFormatter": "Prisma.prisma-insider"
   },
   "[dockercompose]": {
     "editor.defaultFormatter": "ms-azuretools.vscode-containers"

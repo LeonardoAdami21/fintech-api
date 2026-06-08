@@ -14,16 +14,16 @@ datasource db {
 // ─────────────────────────────────────────
 
 model User {
-  id           String       @id @default(uuid())
-  email        String       @unique
-  passwordHash String       @map("password_hash")
-  status       UserStatus   @default(PENDING_VERIFICATION)
-  role         UserRole     @default(CUSTOMER)
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @updatedAt @map("updated_at")
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String     @map("password_hash")
+  status       UserStatus @default(PENDING_VERIFICATION)
+  role         UserRole   @default(CUSTOMER)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
 
-  sessions     Session[]
-  account      Account?
+  sessions Session[]
+  account  Account?
 
   @@map("users")
 }
@@ -36,7 +36,7 @@ model Session {
   revokedAt    DateTime? @map("revoked_at")
   createdAt    DateTime  @default(now()) @map("created_at")
 
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("sessions")
@@ -63,16 +63,16 @@ model Account {
   userId        String        @unique @map("user_id")
   accountNumber String        @unique @map("account_number")
   agency        String        @default("0001")
-  balanceCents  BigInt        @default(0) @map("balance_cents")
-  limitCents    BigInt        @default(0) @map("limit_cents")
+  balanceCents  Decimal       @default(0.00) @map("balance_cents")
+  limitCents    Decimal       @default(0.00) @map("limit_cents")
   status        AccountStatus @default(ACTIVE)
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
 
-  user          User          @relation(fields: [userId], references: [id])
-  pixKeys       PixKey[]
-  sentPayments  Payment[]     @relation("sender")
-  rcvdPayments  Payment[]     @relation("receiver")
+  user         User      @relation(fields: [userId], references: [id])
+  pixKeys      PixKey[]
+  sentPayments Payment[] @relation("sender")
+  rcvdPayments Payment[] @relation("receiver")
 
   @@map("accounts")
 }
@@ -84,7 +84,7 @@ model PixKey {
   keyValue  String     @unique @map("key_value")
   createdAt DateTime   @default(now()) @map("created_at")
 
-  account   Account    @relation(fields: [accountId], references: [id])
+  account Account @relation(fields: [accountId], references: [id])
 
   @@index([accountId])
   @@map("pix_keys")
@@ -109,20 +109,20 @@ enum PixKeyType {
 // ─────────────────────────────────────────
 
 model Payment {
-  id              String        @id @default(uuid())
-  senderAccountId String        @map("sender_account_id")
-  receiverAccountId String      @map("receiver_account_id")
-  amountCents     BigInt        @map("amount_cents")
-  type            PaymentType
-  status          PaymentStatus @default(PENDING)
-  description     String?
-  idempotencyKey  String        @unique @map("idempotency_key")
-  failureReason   String?       @map("failure_reason")
-  processedAt     DateTime?     @map("processed_at")
-  createdAt       DateTime      @default(now()) @map("created_at")
-  updatedAt       DateTime      @updatedAt @map("updated_at")
+  id                String        @id @default(uuid())
+  senderAccountId   String        @map("sender_account_id")
+  receiverAccountId String        @map("receiver_account_id")
+  amountCents       Decimal       @default(0.00) @map("amount_cents")
+  type              PaymentType
+  status            PaymentStatus @default(PENDING)
+  description       String?
+  idempotencyKey    String        @unique @map("idempotency_key")
+  failureReason     String?       @map("failure_reason")
+  processedAt       DateTime?     @map("processed_at")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
 
-  senderAccount   Account       @relation("sender",   fields: [senderAccountId],   references: [id])
+  senderAccount   Account       @relation("sender", fields: [senderAccountId], references: [id])
   receiverAccount Account       @relation("receiver", fields: [receiverAccountId], references: [id])
   ledgerEntries   LedgerEntry[]
 
@@ -151,16 +151,16 @@ enum PaymentStatus {
 // ─────────────────────────────────────────
 
 model LedgerEntry {
-  id          String          @id @default(uuid())
-  paymentId   String          @map("payment_id")
-  accountId   String          @map("account_id")
-  type        LedgerEntryType
-  amountCents BigInt          @map("amount_cents")
-  balanceCents BigInt         @map("balance_cents")
-  description String
-  createdAt   DateTime        @default(now()) @map("created_at")
+  id           String          @id @default(uuid())
+  paymentId    String          @map("payment_id")
+  accountId    String          @map("account_id")
+  type         LedgerEntryType
+  amountCents  Decimal         @default(0.00) @map("amount_cents")
+  balanceCents Decimal         @default(0.00) @map("balance_cents")
+  description  String
+  createdAt    DateTime        @default(now()) @map("created_at")
 
-  payment     Payment         @relation(fields: [paymentId], references: [id])
+  payment Payment @relation(fields: [paymentId], references: [id])
 
   @@index([accountId])
   @@index([paymentId])
@@ -177,15 +177,15 @@ enum LedgerEntryType {
 // ─────────────────────────────────────────
 
 model OutboxEvent {
-  id          String    @id @default(uuid())
-  aggregateId String    @map("aggregate_id")
-  eventName   String    @map("event_name")
+  id          String       @id @default(uuid())
+  aggregateId String       @map("aggregate_id")
+  eventName   String       @map("event_name")
   payload     Json
   status      OutboxStatus @default(PENDING)
-  retries     Int       @default(0)
-  lastError   String?   @map("last_error")
-  publishedAt DateTime? @map("published_at")
-  createdAt   DateTime  @default(now()) @map("created_at")
+  retries     Int          @default(0)
+  lastError   String?      @map("last_error")
+  publishedAt DateTime?    @map("published_at")
+  createdAt   DateTime     @default(now()) @map("created_at")
 
   @@index([status, createdAt])
   @@map("outbox_events")
@@ -202,14 +202,14 @@ enum OutboxStatus {
 // ─────────────────────────────────────────
 
 model FraudAnalysis {
-  id             String       @id @default(uuid())
-  paymentId      String?      @map("payment_id")
-  senderAccountId String      @map("sender_account_id")
-  amountCents    BigInt       @map("amount_cents")
-  riskScore      Int          @map("risk_score")   // 0-100
-  decision       FraudDecision
-  factors        Json         // array of RiskFactor
-  analyzedAt     DateTime     @default(now()) @map("analyzed_at")
+  id              String        @id @default(uuid())
+  paymentId       String?       @map("payment_id")
+  senderAccountId String        @map("sender_account_id")
+  amountCents     Int           @map("amount_cents")
+  riskScore       Int           @map("risk_score") // 0-100
+  decision        FraudDecision
+  factors         Json // array of RiskFactor
+  analyzedAt      DateTime      @default(now()) @map("analyzed_at")
 
   @@index([senderAccountId])
   @@index([decision])

@@ -5,7 +5,16 @@ export const FRAUD_ANALYSIS_REPOSITORY = Symbol('IFraudAnalysisRepository');
 
 export interface IFraudAnalysisRepository {
   save(analysis: FraudAnalysis): Promise<void>;
-  countRecentBySender(senderAccountId: string, sinceMinutes: number): Promise<number>;
-  sumRecentAmountBySender(senderAccountId: string, sinceHours: number): Promise<bigint>;
-  findRecentReceivers(senderAccountId: string, sinceHours: number): Promise<string[]>;
+  countRecentBySender(
+    senderAccountId: string,
+    sinceMinutes: number,
+  ): Promise<number>;
+  sumRecentAmountBySender(
+    senderAccountId: string,
+    sinceHours: number,
+  ): Promise<number>;
+  findRecentReceivers(
+    senderAccountId: string,
+    sinceHours: number,
+  ): Promise<string[]>;
 }

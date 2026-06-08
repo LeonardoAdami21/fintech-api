@@ -7,7 +7,7 @@ export class PaymentInitiatedEvent extends DomainEvent {
     readonly paymentId: string,
     readonly senderAccountId: string,
     readonly receiverAccountId: string,
-    readonly amountCents: bigint,
+    readonly amountCents: number,
     readonly paymentType: string,
   ) {
     super();
@@ -21,7 +21,7 @@ export class PaymentProcessedEvent extends DomainEvent {
     readonly paymentId: string,
     readonly senderAccountId: string,
     readonly receiverAccountId: string,
-    readonly amountCents: bigint,
+    readonly amountCents: number,
   ) {
     super();
   }
