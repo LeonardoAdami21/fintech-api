@@ -3,7 +3,7 @@ import { Payment as PrismaPayment } from '@prisma/client';
 import { Payment } from '../../domain/entities/payment.entity';
 import { IdempotencyKey } from '../../domain/value-objects/idempotency-key.vo';
 
-function makeMoney(cents: bigint) {
+function makeMoney(cents: number) {
   return {
     amountCents: cents,
     currency: 'BRL',
@@ -23,7 +23,7 @@ export class PaymentMapper {
       {
         senderAccountId: raw.senderAccountId,
         receiverAccountId: raw.receiverAccountId,
-        amount: makeMoney(raw.amountCents),
+        amount: makeMoney(+raw.amountCents),
         type: raw.type as any,
         status: raw.status as any,
         description: raw.description,

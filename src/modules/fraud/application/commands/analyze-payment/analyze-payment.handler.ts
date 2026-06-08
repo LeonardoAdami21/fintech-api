@@ -4,7 +4,7 @@ export class AnalyzePaymentCommand {
     readonly paymentId?: string,
     readonly senderAccountId: string = '',
     readonly receiverAccountId: string = '',
-    readonly amountCents: bigint = 0n,
+    readonly amountCents: number = 0,
     readonly accountAgeDays: number = 0,
   ) {}
 }
@@ -26,11 +26,11 @@ export interface AnalyzePaymentResult {
 }
 
 // ── Thresholds (easily moved to config/DB) ───────────────────────────────────
-const LARGE_AMOUNT_CENTS = 500_000n; // R$ 5.000
-const VERY_LARGE_AMOUNT_CENTS = 5_000_000n; // R$ 50.000
+const LARGE_AMOUNT_CENTS = 500_000; // R$ 5.000
+const VERY_LARGE_AMOUNT_CENTS = 5_000_000; // R$ 50.000
 const HIGH_FREQ_WINDOW_MINUTES = 10;
 const HIGH_FREQ_THRESHOLD = 5;
-const DAILY_VOLUME_LIMIT_CENTS = 2_000_000n; // R$ 20.000
+const DAILY_VOLUME_LIMIT_CENTS = 2_000_000; // R$ 20.000
 const NEW_ACCOUNT_DAYS_THRESHOLD = 30;
 
 @Injectable()
@@ -129,7 +129,7 @@ export class AnalyzePaymentHandler {
     const analysisResult = FraudAnalysis.create({
       paymentId: command.paymentId,
       senderAccountId: command.senderAccountId,
-      amountCents: command.amountCents,
+      amountCents: +command.amountCents,
       factors,
     });
 

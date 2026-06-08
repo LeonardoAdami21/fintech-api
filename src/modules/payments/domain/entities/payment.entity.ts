@@ -108,7 +108,7 @@ export class Payment extends AggregateRoot<PaymentProps> {
         payment.id,
         props.senderAccountId,
         props.receiverAccountId,
-        props.amount.amountCents,
+        +props.amount.amountCents,
         props.type,
       ),
     );
@@ -146,7 +146,7 @@ export class Payment extends AggregateRoot<PaymentProps> {
         this.id,
         this.senderAccountId,
         this.receiverAccountId,
-        this.amount.amountCents,
+        +this.amount.amountCents,
       ),
     );
     return Result.ok(undefined);

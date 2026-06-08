@@ -1,6 +1,6 @@
 // src/modules/accounts/domain/value-objects/pix-key.vo.ts
 
-import { randomUUID } from 'crypto';
+import { v4 as uuid } from 'uuid';
 import { DomainError, Result } from 'src/shared/domain/result';
 import { ValueObject } from 'src/shared/domain/value-object.base';
 
@@ -16,7 +16,7 @@ const VALIDATORS: Record<PixKeyType, RegExp> = {
   CNPJ: /^\d{14}$/,
   EMAIL: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   PHONE: /^\+55\d{10,11}$/,
-  RANDOM: /^[0-9a-f-]{36}$/,
+  RANDOM: /.*/,
 };
 
 export class PixKey extends ValueObject<PixKeyProps> {
@@ -31,18 +31,18 @@ export class PixKey extends ValueObject<PixKeyProps> {
     return this.props.value;
   }
 
-  static create(type: PixKeyType, value: string): Result<PixKey, DomainError> {
+  static create(type: string, value: string): Result<PixKey, DomainError> {
     const regex = VALIDATORS[type];
     if (!regex.test(value)) {
       return Result.fail({
         code: 'INVALID_PIX_KEY',
-        message: `Invalido a chave PIX:  ${type}`,
+        message: `Invalido a chave PIX: ${type}`,
       });
     }
-    return Result.ok(new PixKey({ type, value }));
+    return Result.ok(new PixKey({ type: type as PixKeyType, value }));
   }
 
   static generateRandom(): PixKey {
-    return new PixKey({ type: 'RANDOM', value: randomUUID() });
+    return new PixKey({ type: 'RANDOM', value: uuid() });
   }
 }

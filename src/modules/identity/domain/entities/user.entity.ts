@@ -71,7 +71,7 @@ export class User extends AggregateRoot<UserProps> {
   }
 
   // ── Factory: reconstitution from persistence ──────
-  static reconstitute(props: UserProps, id: string): User {
+  static  reconstitute(props: UserProps, id: string): User {
     return new User(props, id);
   }
 

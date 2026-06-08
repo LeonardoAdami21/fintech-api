@@ -62,14 +62,14 @@ export class Account extends AggregateRoot<AccountProps> {
 
   // ── Factory ─────────────────────────────────────
   static open(userId: string): Result<Account, DomainError> {
-    const zeroMoney = Money.create(1n); // bootstrap; set to 0 manually below
+    const zeroMoney = Money.create(1); // bootstrap; set to 0 manually below
     const now = new Date();
     const account = new Account({
       userId,
       accountNumber: AccountNumber.generate(),
       agency: '0001',
-      balance: new (Money as any)({ amountCents: 0n, currency: 'BRL' }),
-      limit: new (Money as any)({ amountCents: 0n, currency: 'BRL' }),
+      balance: new (Money as any)({ amountCents: 0, currency: 'BRL' }),
+      limit: new (Money as any)({ amountCents: 0, currency: 'BRL' }),
       status: 'ACTIVE',
       pixKeys: [],
       createdAt: now,
@@ -116,7 +116,7 @@ export class Account extends AggregateRoot<AccountProps> {
     return Result.ok(undefined);
   }
 
-  registerPixKey(type: PixKeyType, value: string): Result<PixKey, DomainError> {
+  registerPixKey(type: string, value: string): Result<PixKey, DomainError> {
     if (!this.isActive) {
       return Result.fail({
         code: 'ACCOUNT_NOT_ACTIVE',
@@ -129,7 +129,7 @@ export class Account extends AggregateRoot<AccountProps> {
         message: 'Maximum 5 PIX keys per account',
       });
     }
-    const keyResult = PixKey.create(type, value);
+    const keyResult = PixKey.create(type as PixKeyType, value);
     if (keyResult.isFailure) return Result.fail(keyResult.error);
     this.props.pixKeys.push(keyResult.value);
     this.props.updatedAt = new Date();

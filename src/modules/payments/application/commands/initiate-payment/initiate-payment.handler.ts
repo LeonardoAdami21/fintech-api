@@ -118,7 +118,7 @@ export class InitiatePaymentHandler {
         undefined, // paymentId not yet created
         senderAccount.id,
         receiverAccount.id,
-        amount.amountCents,
+        +amount.amountCents,
         accountAgeDays,
       ),
     );

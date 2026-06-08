@@ -11,7 +11,7 @@ import { BadRequestException } from '@nestjs/common';
 type PrismaAccountWithKeys = PrismaAccount & { pixKeys: PrismaPixKey[] };
 
 // Helper to build a zero-balance Money-like object without calling create()
-function makeMoney(cents: bigint) {
+function makeMoney(cents: number) {
   return {
     amountCents: cents,
     currency: 'BRL',
@@ -40,8 +40,8 @@ export class AccountMapper {
         userId: raw.userId,
         accountNumber: accountNumber.value,
         agency: raw.agency,
-        balance: makeMoney(raw.balanceCents),
-        limit: makeMoney(raw.limitCents),
+        balance: makeMoney(parseFloat(raw.balanceCents as any)),
+        limit: makeMoney(parseFloat(raw.limitCents as any)),
         status: raw.status as any,
         pixKeys,
         createdAt: raw.createdAt,
@@ -57,8 +57,8 @@ export class AccountMapper {
       userId: account.userId,
       accountNumber: account.accountNumber.value,
       agency: account.agency,
-      balanceCents: account.balance.amountCents,
-      limitCents: account.limit.amountCents,
+      balanceCents: +account.balance.amountCents,
+      limitCents: +account.limit.amountCents,
       status: account.status,
       createdAt: account.createdAt,
       updatedAt: account.updatedAt,
