@@ -3,7 +3,7 @@ import { ValueObject } from './value-object.base';
 import { DomainError, Result } from './result';
 
 interface MoneyProps {
-  amountCents: bigint;
+  amountCents: number;
   currency: string;
 }
 
@@ -12,7 +12,7 @@ export class Money extends ValueObject<MoneyProps> {
     super(props);
   }
 
-  get amountCents(): bigint {
+  get amountCents(): number {
     return this.props.amountCents;
   }
 
@@ -25,7 +25,7 @@ export class Money extends ValueObject<MoneyProps> {
   }
 
   static create(
-    amountCents: bigint,
+    amountCents: number,
     currency = 'BRL',
   ): Result<Money, DomainError> {
     if (amountCents < 0n) {
@@ -34,7 +34,7 @@ export class Money extends ValueObject<MoneyProps> {
         message: 'Amount cannot be negative',
       });
     }
-    if (amountCents === 0n) {
+    if (amountCents === 0) {
       return Result.fail({
         code: 'ZERO_AMOUNT',
         message: 'Amount must be greater than zero',
@@ -50,7 +50,7 @@ export class Money extends ValueObject<MoneyProps> {
         message: 'Invalid BRL amount',
       });
     }
-    const cents = BigInt(Math.round(amount * 100));
+    const cents = Number(Math.round(amount * 100));
     return Money.create(cents);
   }
 

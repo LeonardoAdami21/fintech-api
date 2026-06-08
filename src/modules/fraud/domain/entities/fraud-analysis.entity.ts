@@ -9,7 +9,7 @@ import { DomainError, Result } from 'src/shared/domain/result';
 interface FraudAnalysisProps {
   paymentId?: string;
   senderAccountId: string;
-  amountCents: bigint;
+  amountCents: number;
   riskScore: RiskScore;
   factors: RiskFactor[];
   analyzedAt: Date;
@@ -26,7 +26,7 @@ export class FraudAnalysis extends AggregateRoot<FraudAnalysisProps> {
   get senderAccountId(): string {
     return this.props.senderAccountId;
   }
-  get amountCents(): bigint {
+  get amountCents(): number {
     return this.props.amountCents;
   }
   get riskScore(): RiskScore {
@@ -48,7 +48,7 @@ export class FraudAnalysis extends AggregateRoot<FraudAnalysisProps> {
   static create(props: {
     paymentId?: string;
     senderAccountId: string;
-    amountCents: bigint;
+    amountCents: number;
     factors: RiskFactor[];
   }): Result<FraudAnalysis, DomainError> {
     const riskScore = RiskScore.fromWeights(props.factors.map((f) => f.weight));

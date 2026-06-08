@@ -36,7 +36,7 @@ export class PrismaFraudAnalysisRepository implements IFraudAnalysisRepository {
   async sumRecentAmountBySender(
     senderAccountId: string,
     sinceHours: number,
-  ): Promise<bigint> {
+  ): Promise<number> {
     const since = new Date(Date.now() - sinceHours * 60 * 60 * 1000);
     const result = await this.prisma.fraudAnalysis.aggregate({
       where: {
@@ -46,7 +46,7 @@ export class PrismaFraudAnalysisRepository implements IFraudAnalysisRepository {
       },
       _sum: { amountCents: true },
     });
-    return result._sum.amountCents ?? 0n;
+    return result._sum.amountCents ?? 0;
   }
 
   async findRecentReceivers(

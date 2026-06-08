@@ -68,8 +68,8 @@ export class GetStatementQuery {
       entries: entries.map((e) => ({
         entryId: e.id,
         type: e.type, // DEBIT | CREDIT
-        amountBRL: Number(e.amountCents) / 100,
-        balanceBRL: Number(e.balanceCents) / 100,
+        amountBRL: parseFloat((+e.amountCents / 100).toFixed(2)),
+        balanceBRL: parseFloat((+e.balanceCents / 100).toFixed(2)),
         description: e.description,
         paymentType: e.payment?.type ?? null,
         paymentDesc: e.payment?.description ?? null,
